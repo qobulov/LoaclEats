@@ -53,9 +53,8 @@ func (h *Handler) GetProfileById(c *gin.Context) {
 // @Param user body proto.UpdateProfileRequest true "Update Profile"
 // @Success 200 {object} proto.GetProfileResponse
 // @Failure 400 {object} models.Error
-// @Router /api/v1/users/updateProfile/{id} [put]
+// @Router /api/v1/users/profile/update [put]
 func (h *Handler) UpdateProfile(c *gin.Context) {
-	fmt.Println("fd")
 	id := c.Param("id")
 	req := &pb.UpdateProfileRequest{
 		UserId: id,
@@ -69,4 +68,32 @@ func (h *Handler) UpdateProfile(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, res)
+}
+
+// @Summary delete profile
+// @Description delete profile
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path string true "Delete Profile"
+// @Success 200 {object} proto.Status
+// @Failure 400 {object} models.Error
+// @Router /api/v1/users/profile/{id} [delete]
+func (h *Handler) DeleteProfile(c *gin.Context) {
+	req := &pb.UserId{
+		Id: c.Param("id"),
+	}
+
+	_, err := h.UserClient.DeleteProfile(c, req)
+	if err != nil {
+		h.Logger.Error(fmt.Sprintf("DeleteProfile request error: %v", err.Error()))
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Profile deleted successfully",
+	})
 }

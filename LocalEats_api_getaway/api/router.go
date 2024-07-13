@@ -1,9 +1,10 @@
 package api
 
 import (
+	_ "api_getaway/api/docs"
 	"api_getaway/api/handler"
 	"api_getaway/api/middleware"
-	_ "api_getaway/api/docs"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -33,7 +34,8 @@ func NewRouter() *gin.Engine {
 	users := router.Group("/api/v1/users")
 	{
 		users.GET("/profile/:id", h.GetProfileById)
-		users.PUT("/profile", h.UpdateProfile)
+		users.PUT("/profile/update", h.UpdateProfile)
+		users.DELETE("/profile/:id", h.DeleteProfile)
 	}
 
 	// KitchenService endpointlari

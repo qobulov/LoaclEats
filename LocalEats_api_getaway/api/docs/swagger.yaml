@@ -9,6 +9,11 @@ definitions:
       user:
         $ref: '#/definitions/proto.User'
     type: object
+  proto.Status:
+    properties:
+      Status:
+        type: boolean
+    type: object
   proto.UpdateProfileRequest:
     properties:
       UserId:
@@ -69,6 +74,32 @@ info:
   version: "1.0"
 paths:
   /api/v1/users/profile/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete profile
+      parameters:
+      - description: Delete Profile
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: delete profile
+      tags:
+      - users
     get:
       consumes:
       - application/json
@@ -95,7 +126,7 @@ paths:
       summary: Get Profile
       tags:
       - users
-  /api/v1/users/updateProfile/{id}:
+  /api/v1/users/profile/update:
     put:
       consumes:
       - application/json
