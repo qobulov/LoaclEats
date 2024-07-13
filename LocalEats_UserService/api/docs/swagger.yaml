@@ -1,0 +1,165 @@
+definitions:
+  proto.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  proto.LogoutRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  proto.RegisterRequest:
+    properties:
+      address:
+        type: string
+      bio:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      is_verified:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      specialties:
+        type: string
+      user_type:
+        type: string
+      username:
+        type: string
+      years_of_experience:
+        type: integer
+    type: object
+  proto.ResetPasswordRequest:
+    properties:
+      email:
+        type: string
+      new_password:
+        type: string
+    type: object
+  proto.Status:
+    properties:
+      Status:
+        type: boolean
+    type: object
+host: localhost:7777
+info:
+  contact:
+    email: azizbekqobulov05@gmail.com
+    name: Azizbek
+    url: http://www.support_me_with_smile
+  description: This is the Auth service of LocalEats project
+  title: Auth Service
+  version: "1.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: to login user in the SitAndEat app
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/proto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/proto.Status'
+      summary: Login User
+      tags:
+      - Auth
+  /api/v1/auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: to logout user in the SitAndEat app
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/proto.LogoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/proto.Status'
+      summary: Logout User
+      tags:
+      - Auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: to register user in the SitAndEat app
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/proto.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/proto.Status'
+      summary: Register User
+      tags:
+      - Auth
+  /api/v1/auth/reset-password:
+    post:
+      consumes:
+      - application/json
+      description: to reset password in the SitAndEat app
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/proto.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Status'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/proto.Status'
+      summary: Reset Password
+      tags:
+      - Auth
+swagger: "2.0"
