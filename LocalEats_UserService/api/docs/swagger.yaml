@@ -48,6 +48,13 @@ definitions:
       Status:
         type: boolean
     type: object
+  proto.Token:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
+        type: string
+    type: object
 host: localhost:7777
 info:
   contact:
@@ -108,6 +115,32 @@ paths:
           schema:
             $ref: '#/definitions/proto.Status'
       summary: Logout User
+      tags:
+      - Auth
+  /api/v1/auth/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: to refresh token in the LocalEats app
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/proto.Token'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.Token'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/proto.Status'
+      summary: Refresh Token
       tags:
       - Auth
   /api/v1/auth/register:

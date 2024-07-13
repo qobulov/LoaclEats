@@ -22,11 +22,11 @@ func (r *UserRepo) Register(req *pb.RegisterRequest) (*pb.Status, error) {
 	query := `
 		INSERT INTO 
 			users
-			(username, email, password_hash, full_name, user_type, address, phone_number, specialties, years_of_experience, bio, is_verified)
+			(username, email, password_hash, full_name, user_type, address, phone_number)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+			($1, $2, $3, $4, $5, $6, $7)
 		`
-	_, err := r.Db.Exec(query, req.Username, req.Email, req.Password, req.FullName, req.UserType, req.Address, req.PhoneNumber, req.Specialties, req.YearsOfExperience, req.Bio, req.IsVerified)
+	_, err := r.Db.Exec(query, req.Username, req.Email, req.Password, req.FullName, req.UserType)
 	if err != nil {
 		return nil, err
 	}
@@ -188,4 +188,24 @@ func (r *UserRepo) DeleteRefreshToken(email string) (string,error) {
 		return "Logout Unsuccessful, You already logged out!",err
 	}
 	return "Logout Successful",nil
+}
+
+func (r *UserRepo) RefreshToken(token *pb.Token) (error) {
+	query := `
+		SELECT
+			token
+		FROM
+			refresh_token
+		WHERE
+			token = $1
+		AND
+			deleted_at IS NULL`
+
+	row := r.Db.QueryRow(query, token.RefreshToken)
+	var refreshToken string
+	err := row.Scan(&refreshToken)
+	if err != nil {
+		return err
+	}
+	return nil
 }

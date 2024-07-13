@@ -1,1 +1,7 @@
 time=2024-07-13T19:43:40.622+05:00 level=ERROR msg="pq: invalid input syntax for type boolean: \"string\""
+time=2024-07-13T21:55:13.801+05:00 level=ERROR msg="sql: no rows in result set"
+time=2024-07-13T21:55:18.496+05:00 level=ERROR msg="sql: no rows in result set"
+time=2024-07-13T21:58:46.991+05:00 level=ERROR msg="sql: no rows in result set"
+time=2024-07-13T22:02:02.591+05:00 level=ERROR msg="sql: no rows in result set"
+time=2024-07-13T22:04:33.642+05:00 level=ERROR msg="pq: got 1 parameters but the statement requires 2"
+time=2024-07-13T22:55:49.233+05:00 level=ERROR msg="sql: no rows in result set"

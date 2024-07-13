@@ -27,8 +27,14 @@ func NewRouter(db *sql.DB) *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	h := handler.NewHandler(db)   yId)
-	users.PUT("/profile", h.UpdateProfile)t)
+	h := handler.NewHandler(db)    
+	auth := r.Group("/api/v1/auth")
+    {
+        auth.POST("/register", h.Register)
+        auth.POST("/login", h.Login)
+        auth.POST("/reset-password", h.ResetPassword)
+        auth.POST("/logout", h.Logout)
+		auth.POST("/refresh-token", h.RefreshToken)
     }
 
 	return r

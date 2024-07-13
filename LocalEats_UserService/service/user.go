@@ -31,7 +31,6 @@ func (s *AuthServiceServer) GetProfile(ctx context.Context, req *pb.UserId) (*pb
 	return user, nil
 }
 
-
 func (s *AuthServiceServer) UpdateProfile(ctx context.Context, req *pb.UpdateProfileRequest) (*pb.Status, error) {
 
 	status, err := s.User.UpdateProfile(req)

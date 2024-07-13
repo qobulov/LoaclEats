@@ -170,3 +170,31 @@ func (h *Handler) ResetPassword(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusAccepted, "Password reset successfully")
 }
+
+// @Summary Refresh Token
+// @Description to refresh token in the LocalEats app
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body proto.Token true "user"
+// @Success 200 {object} proto.Token
+// @Failure 400 {object} proto.Status
+// @Router /api/v1/auth/refresh-token [post]
+func (h *Handler) RefreshToken(ctx *gin.Context) {
+	req := pb.Token{}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, err)
+		h.logger.Error(err.Error())
+		return
+	}
+	err := h.UserRepo.RefreshToken(&req)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, err)
+		h.logger.Error(err.Error())
+		return
+	}
+
+	token := token.RefreshToken(req.RefreshToken)
+
+	ctx.JSON(http.StatusAccepted, gin.H{"refresh_token": token.RefreshToken,"expires_at": time.Now().Add(time.Hour * 24),"message":"Token refreshed successfully"})
+}
