@@ -1,0 +1,136 @@
+definitions:
+  models.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  proto.GetProfileResponse:
+    properties:
+      user:
+        $ref: '#/definitions/proto.User'
+    type: object
+  proto.UpdateProfileRequest:
+    properties:
+      UserId:
+        type: string
+      address:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      user_type:
+        type: string
+      username:
+        type: string
+    type: object
+  proto.User:
+    properties:
+      address:
+        type: string
+      bio:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      is_verified:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+      specialties:
+        type: string
+      updated_at:
+        type: string
+      user_type:
+        type: string
+      username:
+        type: string
+      years_of_experience:
+        type: integer
+    type: object
+host: localhost:4444
+info:
+  contact: {}
+  description: This is a sample server for Auth Service.
+  title: Auth Service API
+  version: "1.0"
+paths:
+  /api/v1/users/profile/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Profile
+      parameters:
+      - description: Get Profile
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Profile
+      tags:
+      - users
+  /api/v1/users/updateProfile/{id}:
+    put:
+      consumes:
+      - application/json
+      description: update profile
+      parameters:
+      - description: Update Profile
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Profile
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/proto.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proto.GetProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: update profile
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
