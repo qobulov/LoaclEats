@@ -1,3 +1,6 @@
 [submodule "LocalEats_api_getaway/LocalEats_protos"]
 	path = LocalEats_api_getaway/LocalEats_protos
 	url = git@github.com:qobulov/LocalEats_protos.git
+[submodule "LocalEats_UserService/LocalEats_protos"]
+	path = LocalEats_UserService/LocalEats_protos
+	url = git@github.com:qobulov/LocalEats_protos.git
