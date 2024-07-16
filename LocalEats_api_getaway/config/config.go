@@ -9,16 +9,17 @@ import (
 )
 
 type Config struct {
-	USER_SERVICE        string
-	RESERVATION_SERVICE string
-	PAYMENT_SERVICE     string
-	API_GATEWAY         string
-	DB_HOST             string
-	DB_PORT             string
-	DB_USER             string
-	DB_PASSWORD         string
-	DB_NAME             string
-	SIGNING_KEY         string
+	USER_SERVICE    string
+	ORDER_SERVICE   string
+	EXTRA_SERVICE string
+	API_GATEWAY     string
+	DB_HOST         string
+	DB_PORT         string
+	DB_USER         string
+	DB_PASSWORD     string
+	DB_NAME         string
+	SIGNING_KEY     string
+	GMAIL_CODE      string
 }
 
 func Load() *Config {
@@ -34,9 +35,10 @@ func Load() *Config {
 	config.DB_NAME = cast.ToString(Coalesce("DB_NAME", "resuserservice"))
 	config.API_GATEWAY = cast.ToString(Coalesce("API_GATEWAY", "50051"))
 	config.USER_SERVICE = cast.ToString(Coalesce("USER_SERVICE", "50051"))
-	config.PAYMENT_SERVICE = cast.ToString(Coalesce("PAYMENT_SERVICE", "50051"))
-	config.RESERVATION_SERVICE = cast.ToString(Coalesce("RESERVATION_SERVICE", "6666"))
+	config.EXTRA_SERVICE = cast.ToString(Coalesce("EXTRA_SERVICE", "50051"))
+	config.ORDER_SERVICE = cast.ToString(Coalesce("ORDER_SERVICE", "6666"))
 	config.SIGNING_KEY = cast.ToString(Coalesce("SIGNING_KEY", "secret"))
+	config.GMAIL_CODE = cast.ToString(Coalesce("GMAIL_CODE", "secret"))
 
 	return &config
 }

@@ -12,7 +12,7 @@ import (
 func JWTMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		auth := ctx.GetHeader("Authorization")
-
+		fmt.Print("auth: ", auth)
 		if auth == "" {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest,
 				gin.H{"error": "authorization header is required"})

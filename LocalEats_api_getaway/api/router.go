@@ -22,15 +22,15 @@ import (
 func NewRouter() *gin.Engine {
 	router := gin.Default()
 
-	// Swagger endpointini sozlash
+	// Swagger endpoint setup
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	h := handler.NewHandlerRepo()
 
-	// Middleware sozlash
+	// Middleware setup
 	router.Use(middleware.JWTMiddleware())
 
-	// UserService endpointlari
+	// UserService endpoints
 	users := router.Group("/api/v1/users")
 	{
 		users.GET("/profile/:id", h.GetProfileById)
@@ -38,15 +38,60 @@ func NewRouter() *gin.Engine {
 		users.DELETE("/profile/:id", h.DeleteProfile)
 	}
 
-	// KitchenService endpointlari
-	// kitchens := router.Group("/api/v1/kitchens")
-	// {
-	//     kitchens.POST("/", h.CreateKitchen)
-	//     kitchens.PUT("/:id", h.UpdateKitchen)
-	//     kitchens.GET("/:id", h.GetKitchen)
-	//     kitchens.GET("/", h.ListKitchens)
-	//     kitchens.GET("/search", h.SearchKitchens)
-	// }
+	// KitchenService endpoints
+	kitchens := router.Group("/api/v1/kitchens")
+	{
+		kitchens.POST("/", h.CreateKitchen)
+		kitchens.PUT("/:id", h.UpdateKitchen)
+		kitchens.GET("/:id", h.GetKitchenById)
+		kitchens.GET("/", h.ListKitchens)
+		kitchens.DELETE("/:id", h.DeleteKitchen)
+		kitchens.GET("/search", h.SearchKitchens)
+	}
 
+	// OrderService endpoints
+	orders := router.Group("/api/v1/orders")
+	{
+		orders.POST("/", h.CreateOrder)
+		orders.GET("/:id", h.GetOrderByID)
+		orders.PUT("/status", h.UpdateOrderStatus)
+		orders.GET("/", h.ListUserOrders)
+		orders.GET("/kitchen/:id", h.ListKitchenOrders)
+	}
+
+	// DishService endpoints
+	dishes := router.Group("/api/v1/dishes")
+	{
+		dishes.POST("/", h.CreateDishes)
+		dishes.GET("/:id", h.GetDishById)
+		dishes.PUT("/update", h.UpdateDish)
+		dishes.DELETE("/:id", h.DeleteDish)
+		dishes.GET("/kitchen/:id", h.ListDishesByKitchen)
+	}
+
+	//PaymentService endpoints
+	payments := router.Group("/api/v1/payments")
+	{
+		payments.POST("/", h.CreatePayment)
+		payments.GET("/:id", h.GetPaymentById)
+	}
+
+	//Reviews endpoints
+	reviews := router.Group("/api/v1/reviews")
+	{
+		reviews.POST("/", h.CreateReview)
+		reviews.GET("/:id", h.GetKitchenReviewsById)
+		reviews.PUT("/update", h.UpdateReview)
+		reviews.DELETE("/:id", h.DeleteReview)
+	}
+
+	//Extra endpoints
+	extra := router.Group("/api/v1/extra")
+	{
+		extra.GET("/kitchens/:id/statistics", h.GetKitchenStatistics)
+		extra.GET("/users/:id/activity", h.GetUserActivity)
+		extra.POST("/kitchens/working-hours", h.CreateKitchenWorkingHours)
+		extra.PUT("/kitchens/update/working-hours", h.UpdateWorkingHours)
+	}
 	return router
 }
