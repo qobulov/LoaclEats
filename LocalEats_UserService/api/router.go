@@ -32,9 +32,10 @@ func NewRouter(db *sql.DB) *gin.Engine {
     {
         auth.POST("/register", h.Register)
         auth.POST("/login", h.Login)
-        auth.POST("/reset-password", h.ResetPassword)
+        auth.POST("/reset-password/:email/:code/:password", h.ResetPassword)
         auth.POST("/logout", h.Logout)
 		auth.POST("/refresh-token", h.RefreshToken)
+		auth.POST("/forgot-password/:email", h.ForgotPassword)
     }
 
 	return r

@@ -2,12 +2,14 @@ package service
 
 import (
 	postgres "AuthService/Storage"
-	pb "AuthService/genproto/proto"
+	pb "AuthService/genproto/users"
 	"AuthService/pkg/logger"
 	"context"
 	"database/sql"
 	"log/slog"
 )
+
+var Verification int
 
 type AuthServiceServer struct {
 	pb.UnimplementedAuthServiceServer
@@ -36,16 +38,6 @@ func (s *AuthServiceServer) UpdateProfile(ctx context.Context, req *pb.UpdatePro
 	status, err := s.User.UpdateProfile(req)
 	if err != nil {
 		s.Logger.Error("Error with updating user", slog.Any("error", err))
-		return nil, err
-	}
-	return status, nil
-}
-
-func (s *AuthServiceServer) ResetPassword(ctx context.Context, req *pb.ResetPasswordRequest) (*pb.Status, error) {
-
-	status, err := s.User.ResetPassword(req)
-	if err != nil {
-		s.Logger.Error("Error with resetting password", slog.Any("error", err))
 		return nil, err
 	}
 	return status, nil

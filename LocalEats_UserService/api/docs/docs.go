@@ -19,6 +19,44 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/auth/forgot-password/{email}": {
+            "post": {
+                "description": "to forgot password in the SitAndEat app",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Forgot Password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.Status"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/users.Status"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/login": {
             "post": {
                 "description": "to login user in the SitAndEat app",
@@ -39,7 +77,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.LoginRequest"
+                            "$ref": "#/definitions/users.LoginRequest"
                         }
                     }
                 ],
@@ -47,13 +85,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/models.Error"
                         }
                     }
                 }
@@ -79,7 +117,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.LogoutRequest"
+                            "$ref": "#/definitions/users.LogoutRequest"
                         }
                     }
                 ],
@@ -87,13 +125,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     }
                 }
@@ -119,7 +157,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.Token"
+                            "$ref": "#/definitions/users.LoginRequest"
                         }
                     }
                 ],
@@ -127,13 +165,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Token"
+                            "$ref": "#/definitions/users.Token"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     }
                 }
@@ -159,7 +197,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.RegisterRequest"
+                            "$ref": "#/definitions/users.RegisterRequest"
                         }
                     }
                 ],
@@ -167,19 +205,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     }
                 }
             }
         },
-        "/api/v1/auth/reset-password": {
+        "/api/v1/auth/reset-password/{email}/{code}/{password}": {
             "post": {
                 "description": "to reset password in the SitAndEat app",
                 "consumes": [
@@ -194,26 +232,38 @@ const docTemplate = `{
                 "summary": "Reset Password",
                 "parameters": [
                     {
-                        "description": "user",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/proto.ResetPasswordRequest"
-                        }
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "enter code from email",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "new password",
+                        "name": "password",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     }
                 }
@@ -221,7 +271,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "proto.LoginRequest": {
+        "models.Error": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.LoginRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -232,7 +290,7 @@ const docTemplate = `{
                 }
             }
         },
-        "proto.LogoutRequest": {
+        "users.LogoutRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -240,22 +298,13 @@ const docTemplate = `{
                 }
             }
         },
-        "proto.RegisterRequest": {
+        "users.RegisterRequest": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "bio": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
                 "full_name": {
-                    "type": "string"
-                },
-                "is_verified": {
                     "type": "string"
                 },
                 "password": {
@@ -264,32 +313,15 @@ const docTemplate = `{
                 "phone_number": {
                     "type": "string"
                 },
-                "specialties": {
-                    "type": "string"
-                },
                 "user_type": {
                     "type": "string"
                 },
                 "username": {
                     "type": "string"
-                },
-                "years_of_experience": {
-                    "type": "integer"
                 }
             }
         },
-        "proto.ResetPasswordRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "new_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "proto.Status": {
+        "users.Status": {
             "type": "object",
             "properties": {
                 "Status": {
@@ -297,7 +329,7 @@ const docTemplate = `{
                 }
             }
         },
-        "proto.Token": {
+        "users.Token": {
             "type": "object",
             "properties": {
                 "accessToken": {

@@ -2,7 +2,7 @@ package token
 
 import (
 	"AuthService/config"
-	pb "AuthService/genproto/proto"
+	pb "AuthService/genproto/users"
 	"fmt"
 	"log"
 	"time"
@@ -20,14 +20,9 @@ func GenerateJWT(user *pb.User) *pb.Token {
 	accessClaim["email"] = user.Email
 	accessClaim["phone_number"] = user.PhoneNumber
 	accessClaim["user_type"] = user.UserType
-	accessClaim["address"] = user.Address
 	accessClaim["full_name"] = user.FullName
-	accessClaim["years_of_experience"] = user.YearsOfExperience
-	accessClaim["bio"] = user.Bio
-	accessClaim["specialties"] = user.Specialties
-	accessClaim["is_verified"] = user.IsVerified
 	accessClaim["iat"] = time.Now().Unix()
-	accessClaim["exp"] = time.Now().Add(time.Hour).Unix()
+	accessClaim["exp"] = time.Now().Add(3*time.Hour).Unix()
 
 	con := config.Load()
 	access, err := accesstoken.SignedString([]byte(con.SIGNING_KEY))
@@ -41,12 +36,7 @@ func GenerateJWT(user *pb.User) *pb.Token {
 	refreshClaim["email"] = user.Email
 	refreshClaim["phone_number"] = user.PhoneNumber
 	refreshClaim["user_type"] = user.UserType
-	refreshClaim["address"] = user.Address
 	refreshClaim["full_name"] = user.FullName
-	refreshClaim["years_of_experience"] = user.YearsOfExperience
-	refreshClaim["bio"] = user.Bio
-	refreshClaim["specialties"] = user.Specialties
-	refreshClaim["is_verified"] = user.IsVerified
 	refreshClaim["iat"] = time.Now().Unix()
 	refreshClaim["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
@@ -94,12 +84,7 @@ func RefreshToken(token string) *pb.Token {
 	claims["email"] = refClaim["email"]
 	claims["phone_number"] = refClaim["phone_number"]
 	claims["user_type"] = refClaim["user_type"]
-	claims["address"] = refClaim["address"]
 	claims["full_name"] = refClaim["full_name"]
-	claims["years_of_experience"] = refClaim["years_of_experience"]
-	claims["bio"] = refClaim["bio"]
-	claims["specialties"] = refClaim["specialties"]
-	claims["is_verified"] = refClaim["is_verified"]
 	claims["iat"] = time.Now().Unix()
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 	refresh, err := refreshClaim.SignedString([]byte(config.Load().SIGNING_KEY))

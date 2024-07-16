@@ -12,6 +12,44 @@
     },
     "host": "localhost:7777",
     "paths": {
+        "/api/v1/auth/forgot-password/{email}": {
+            "post": {
+                "description": "to forgot password in the SitAndEat app",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Forgot Password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.Status"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/users.Status"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/login": {
             "post": {
                 "description": "to login user in the SitAndEat app",
@@ -32,7 +70,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.LoginRequest"
+                            "$ref": "#/definitions/users.LoginRequest"
                         }
                     }
                 ],
@@ -40,13 +78,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/models.Error"
                         }
                     }
                 }
@@ -72,7 +110,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.LogoutRequest"
+                            "$ref": "#/definitions/users.LogoutRequest"
                         }
                     }
                 ],
@@ -80,13 +118,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     }
                 }
@@ -112,7 +150,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.Token"
+                            "$ref": "#/definitions/users.LoginRequest"
                         }
                     }
                 ],
@@ -120,13 +158,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Token"
+                            "$ref": "#/definitions/users.Token"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     }
                 }
@@ -152,7 +190,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/proto.RegisterRequest"
+                            "$ref": "#/definitions/users.RegisterRequest"
                         }
                     }
                 ],
@@ -160,19 +198,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     }
                 }
             }
         },
-        "/api/v1/auth/reset-password": {
+        "/api/v1/auth/reset-password/{email}/{code}/{password}": {
             "post": {
                 "description": "to reset password in the SitAndEat app",
                 "consumes": [
@@ -187,26 +225,38 @@
                 "summary": "Reset Password",
                 "parameters": [
                     {
-                        "description": "user",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/proto.ResetPasswordRequest"
-                        }
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "enter code from email",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "new password",
+                        "name": "password",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/proto.Status"
+                            "$ref": "#/definitions/users.Status"
                         }
                     }
                 }
@@ -214,7 +264,15 @@
         }
     },
     "definitions": {
-        "proto.LoginRequest": {
+        "models.Error": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.LoginRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -225,7 +283,7 @@
                 }
             }
         },
-        "proto.LogoutRequest": {
+        "users.LogoutRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -233,22 +291,13 @@
                 }
             }
         },
-        "proto.RegisterRequest": {
+        "users.RegisterRequest": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
-                },
-                "bio": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
                 "full_name": {
-                    "type": "string"
-                },
-                "is_verified": {
                     "type": "string"
                 },
                 "password": {
@@ -257,32 +306,15 @@
                 "phone_number": {
                     "type": "string"
                 },
-                "specialties": {
-                    "type": "string"
-                },
                 "user_type": {
                     "type": "string"
                 },
                 "username": {
                     "type": "string"
-                },
-                "years_of_experience": {
-                    "type": "integer"
                 }
             }
         },
-        "proto.ResetPasswordRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "new_password": {
-                    "type": "string"
-                }
-            }
-        },
-        "proto.Status": {
+        "users.Status": {
             "type": "object",
             "properties": {
                 "Status": {
@@ -290,7 +322,7 @@
                 }
             }
         },
-        "proto.Token": {
+        "users.Token": {
             "type": "object",
             "properties": {
                 "accessToken": {

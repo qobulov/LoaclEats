@@ -2,10 +2,12 @@ package handler
 
 import (
 	"AuthService/api/token"
-	pb "AuthService/genproto/proto"
+	pb "AuthService/genproto/users"
 	"AuthService/models"
 	"encoding/json"
+	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,9 +19,9 @@ import (
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body proto.RegisterRequest true "user"
-// @Success 200 {object} proto.Status
-// @Failure 400 {object} proto.Status
+// @Param user body users.RegisterRequest true "user"
+// @Success 200 {object} users.Status
+// @Failure 400 {object} users.Status
 // @Router /api/v1/auth/register [post]
 func (h *Handler) Register(ctx *gin.Context) {
 	req := pb.RegisterRequest{}
@@ -30,13 +32,13 @@ func (h *Handler) Register(ctx *gin.Context) {
 		return
 	}
 
-	hashedpassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err)
 		h.logger.Error(err.Error())
 		return
 	}
-	req.Password = string(hashedpassword)
+	req.Password = string(hashedPassword)
 
 	status, err := h.UserRepo.Register(&req)
 	if err != nil {
@@ -46,12 +48,13 @@ func (h *Handler) Register(ctx *gin.Context) {
 	}
 
 	if !status.Status {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err)
-		h.logger.Error(err.Error())
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, "Failed to register user")
+		h.logger.Error(errors.New("failed to register user").Error())
 		return
 	}
 
-	ctx.JSON(http.StatusAccepted, nil)
+	
+	ctx.JSON(http.StatusAccepted, gin.H{"message": "User registered successfully"})
 }
 
 // @Summary Login User
@@ -59,9 +62,9 @@ func (h *Handler) Register(ctx *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body proto.LoginRequest true "user"
-// @Success 200 {object} proto.Status
-// @Failure 400 {object} proto.Status
+// @Param user body users.LoginRequest true "user"
+// @Success 200 {object} users.Status
+// @Failure 400 {object} models.Error
 // @Router /api/v1/auth/login [post]
 func (h *Handler) Login(ctx *gin.Context) {
 	req := pb.LoginRequest{}
@@ -91,12 +94,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 		Email:       req.Email,
 		PhoneNumber: user.PhoneNumber,
 		UserType:    user.UserType,
-		Address:     user.Address,
 		FullName:    user.FullName,
-		IsVerified:  user.IsVerified,
-		Bio:         user.Bio,
-		Specialties: user.Specialties,
-		YearsOfExperience: user.YearsOfExperience,
 	})
 
 	err = h.UserRepo.StoreRefreshToken(&models.RefreshToken{
@@ -120,9 +118,9 @@ func (h *Handler) Login(ctx *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body proto.LogoutRequest true "user"
-// @Success 200 {object} proto.Status
-// @Failure 400 {object} proto.Status
+// @Param user body users.LogoutRequest true "user"
+// @Success 200 {object} users.Status
+// @Failure 400 {object} users.Status
 // @Router /api/v1/auth/logout [post]
 func (h *Handler) Logout(ctx *gin.Context) {
 	req := pb.LogoutRequest{}
@@ -131,13 +129,13 @@ func (h *Handler) Logout(ctx *gin.Context) {
 		h.logger.Error(err.Error())
 		return
 	}
-	msg,err := h.UserRepo.DeleteRefreshToken(req.Email)
+	msg, err := h.UserRepo.DeleteRefreshToken(req.Email)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, msg)
 		h.logger.Error(err.Error())
 		return
 	}
-	ctx.JSON(http.StatusAccepted, msg)
+	ctx.JSON(http.StatusAccepted, gin.H{"message": msg})
 }
 
 // @Summary Reset Password
@@ -145,30 +143,43 @@ func (h *Handler) Logout(ctx *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body proto.ResetPasswordRequest true "user"
-// @Success 200 {object} proto.Status
-// @Failure 400 {object} proto.Status
-// @Router /api/v1/auth/reset-password [post]
+// @Param email path string true "email"
+// @Param code path string true "enter code from email"
+// @Param password path string true "new password"
+// @Success 200 {object} users.Status
+// @Failure 400 {object} users.Status
+// @Router /api/v1/auth/reset-password/{email}/{code}/{password} [post]
 func (h *Handler) ResetPassword(ctx *gin.Context) {
-	req := pb.ResetPasswordRequest{}
-	if err := json.NewDecoder(ctx.Request.Body).Decode(&req); err != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, err)
-		h.logger.Error(err.Error())
+	email := ctx.Param("email")
+	cod := ctx.Param("code")
+	newPassword := ctx.Param("password")
+
+	if email == "" || cod == "" || newPassword == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, "Email, code, and new password are required")
+		h.logger.Error(errors.New("email, code, and new password are required").Error())
 		return
 	}
+	code , _ := strconv.Atoi(cod)
+	req := pb.ResetPasswordRequest{
+		Email:       email,
+		NewPassword: newPassword,
+		Verification: int32(code),
+	}
+
 	status, err := h.UserRepo.ResetPassword(&req)
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, "Failed to reset password")
 		h.logger.Error(err.Error())
 		return
 	}
 
 	if !status.Status {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, "Password reset failed")
-		h.logger.Error(err.Error())
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message":"Invalid Password!"})
+		h.logger.Error(errors.New("invalid password").Error())
 		return
 	}
-	ctx.JSON(http.StatusAccepted, "Password reset successfully")
+
+	ctx.JSON(http.StatusOK, "Password reset successfully")
 }
 
 // @Summary Refresh Token
@@ -176,25 +187,56 @@ func (h *Handler) ResetPassword(ctx *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body proto.Token true "user"
-// @Success 200 {object} proto.Token
-// @Failure 400 {object} proto.Status
+// @Param user body users.LoginRequest true "user"
+// @Success 200 {object} users.Token
+// @Failure 400 {object} users.Status
 // @Router /api/v1/auth/refresh-token [post]
 func (h *Handler) RefreshToken(ctx *gin.Context) {
-	req := pb.Token{}
+	req := pb.LoginRequest{}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, err)
 		h.logger.Error(err.Error())
 		return
 	}
-	err := h.UserRepo.RefreshToken(&req)
+	reftoken, err := h.UserRepo.RefreshToken(req.Email)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, err)
 		h.logger.Error(err.Error())
 		return
 	}
 
-	token := token.RefreshToken(req.RefreshToken)
+	token := token.RefreshToken(reftoken)
 
-	ctx.JSON(http.StatusAccepted, gin.H{"refresh_token": token.RefreshToken,"expires_at": time.Now().Add(time.Hour * 24),"message":"Token refreshed successfully"})
+	ctx.JSON(http.StatusAccepted, gin.H{"access_token": token.RefreshToken, "expires_at": time.Now().Add(time.Hour * 24), "message": "Token refreshed successfully"})
+}
+
+// @Summary Forgot Password
+// @Description to forgot password in the SitAndEat app
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param email path string true "email"
+// @Success 200 {object} users.Status
+// @Failure 400 {object} users.Status
+// @Router /api/v1/auth/forgot-password/{email} [post]
+func (h *Handler) ForgotPassword(ctx *gin.Context) {
+	email := ctx.Param("email")
+	req := &pb.ResetPasswordRequest{Email: email}
+	if email == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, "Email is required")
+		h.logger.Error(errors.New("email is required").Error())
+		return
+	}
+	status, err := h.UserRepo.ForgotPassword(req)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, "Failed to send reset password email 1")
+		h.logger.Error(err.Error())	
+		return
+	}
+	if !status.Status {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, "Failed to send reset password email 1")
+		h.logger.Error(errors.New("failed to send reset password email").Error())
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password reset email sent successfully"})
 }

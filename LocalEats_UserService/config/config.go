@@ -17,6 +17,8 @@ type Config struct {
 	DB_PASSWORD  string
 	DB_NAME      string
 	SIGNING_KEY  string
+	GMAIL_CODE   string
+	ORDER_SERVICE string
 }
 
 func Load() Config {
@@ -30,9 +32,11 @@ func Load() Config {
 	config.DB_USER = cast.ToString(Coalesce("DB_USER", "postgres"))
 	config.DB_PASSWORD = cast.ToString(Coalesce("DB_PASSWORD", "hamidjon4424"))
 	config.DB_NAME = cast.ToString(Coalesce("DB_NAME", "resuserservice"))
-	config.USER_SERVICE = cast.ToString(Coalesce("USER_SERVICE", "50051"))
+	config.USER_SERVICE = cast.ToString(Coalesce("USER_SERVICE", "8888"))
 	config.USER_ROUTER = cast.ToString(Coalesce("USER_ROUTER", "50051"))
 	config.SIGNING_KEY = cast.ToString(Coalesce("SIGNING_KEY", "secret"))
+	config.GMAIL_CODE = cast.ToString(Coalesce("GMAIL_CODE", "secret"))
+	config.ORDER_SERVICE = cast.ToString(Coalesce("ORDER_SERVICE", "6666"))
 
 	return config
 }
