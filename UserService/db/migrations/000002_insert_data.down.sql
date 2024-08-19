@@ -1,0 +1,3 @@
+TRUNCATE TABLE IF EXISTS users;
+TRUNCATE TABLE IF EXISTS refresh_tokens;
+TRUNCATE TABLE IF EXISTS kitchens_profile;    

@@ -1,0 +1,2 @@
+time=2024-08-19T20:04:37.772+05:00 level=ERROR msg="pq: relation \"users\" does not exist"
+time=2024-08-19T20:06:12.000+05:00 level=ERROR msg="Error with getting user" error="sql: Scan error on column index 5, name \"address\": converting NULL to string is unsupported"
