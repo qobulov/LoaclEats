@@ -1,0 +1,1 @@
+time=2024-08-19T20:06:12.002+05:00 level=ERROR msg="GetProfile request error: rpc error: code = Unknown desc = sql: Scan error on column index 5, name \"address\": converting NULL to string is unsupported"
