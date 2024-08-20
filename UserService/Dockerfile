@@ -31,8 +31,8 @@ COPY --from=builder /app/myapp .
 # Optionally copy the .env file if it's needed
 COPY --from=builder /app/.env .
 
-# Expose port 4444
-EXPOSE 4444
-
+# Expose port 7777
+EXPOSE 7777
+EXPOSE 8888
 # Command to run the executable
 CMD ["./myapp"]

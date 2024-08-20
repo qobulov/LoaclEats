@@ -23,7 +23,13 @@ type Config struct {
 }
 
 func Load() *Config {
-	if err := godotenv.Load("/home/qobulov/github/LocalEats/api-getaway/.env"); err != nil {
+	path, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Current path: ", path)
+
+	if err := godotenv.Load(path+"/.env"); err != nil {
 		log.Print("No .env file found")
 	}
 
